@@ -1,9 +1,9 @@
-package com.dmgpersonal.simpleweather
+package com.dmgpersonal.simpleweather.view
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.dmgpersonal.simpleweather.R
 import com.dmgpersonal.simpleweather.databinding.MainActivityBinding
-import com.dmgpersonal.simpleweather.ui.main.MainFragment
 
 class MainActivity : AppCompatActivity() {
 
