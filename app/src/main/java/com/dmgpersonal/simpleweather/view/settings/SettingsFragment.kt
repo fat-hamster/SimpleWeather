@@ -1,4 +1,4 @@
-package com.dmgpersonal.simpleweather.view
+package com.dmgpersonal.simpleweather.view.settings
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

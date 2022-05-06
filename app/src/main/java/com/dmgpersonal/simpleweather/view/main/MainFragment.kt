@@ -1,4 +1,4 @@
-package com.dmgpersonal.simpleweather.view
+package com.dmgpersonal.simpleweather.view.main
 
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
@@ -6,11 +6,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.Observer
 import com.dmgpersonal.simpleweather.viewmodel.AppState
 import com.dmgpersonal.simpleweather.R
 import com.dmgpersonal.simpleweather.model.Weather
 import com.dmgpersonal.simpleweather.databinding.MainFragmentBinding
+import com.dmgpersonal.simpleweather.model.City
+import com.dmgpersonal.simpleweather.view.cities_list.CitiesListFragment
 import com.dmgpersonal.simpleweather.viewmodel.MainViewModel
 import com.google.android.material.snackbar.Snackbar
 
@@ -19,8 +20,19 @@ class MainFragment : Fragment() {
     private var _binding: MainFragmentBinding? = null
     private val binding get() = _binding!!
 
+    // эта часть кода мне, вероятно, не нужна.
     companion object {
-        fun newInstance() = MainFragment()
+        const val BUNDLE_EXTRA = "weather"
+
+//        fun newInstance(bundle: Bundle): MainFragment {
+//            val fragment = MainFragment()
+//            fragment.arguments = bundle
+//
+//            return fragment
+//        }
+        fun newInstance() : MainFragment {
+            return MainFragment()
+        }
     }
 
     private lateinit var viewModel: MainViewModel
@@ -28,25 +40,40 @@ class MainFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
         _binding = MainFragmentBinding.inflate(inflater, container, false)
-        val view: View = binding.root
-        return view
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
-        viewModel.getLiveData().observe(viewLifecycleOwner, Observer { renderData(it) })
-        viewModel.getWeatherFromLocalSource()
+        viewModel.getLiveData().observe(viewLifecycleOwner) { renderData(it) }
+        viewModel.getWeatherFromLocalSourceCity(City("Москва", 55.755826, 37.617299900000035))
+            //viewModel.getWeatherFromLocalSourceRus()
+
+        binding.cityName.setOnClickListener { listCities() }
+    }
+
+    private fun listCities() {
+        val citiesList = CitiesListFragment.newInstance()
+        activity?.supportFragmentManager!!.beginTransaction()
+            .replace(R.id.container, citiesList)
+            .addToBackStack("")
+            .commit()
     }
 
     private fun renderData(appState: AppState) {
         val loadingLayout = binding.loadingLayout
         when (appState) {
-            is AppState.Success -> {
+            is AppState.SuccessList -> {
                 val weatherData = appState.weatherData
                 loadingLayout.visibility = View.GONE
-                setData(weatherData)
+                setData(weatherData[0]) //TODO: Изменить в дальнейшем!!!
+                Snackbar.make(requireView(), "Success", Snackbar.LENGTH_LONG).show()
+            }
+            is AppState.SuccessData -> {
+                loadingLayout.visibility = View.GONE
+                setData(appState.weather)
                 Snackbar.make(requireView(), "Success", Snackbar.LENGTH_LONG).show()
             }
             is AppState.Loading -> {
@@ -56,7 +83,7 @@ class MainFragment : Fragment() {
                 loadingLayout.visibility = View.GONE
                 Snackbar
                     .make(requireView(), "Error", Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Reload") { viewModel.getWeatherFromLocalSource() }
+                    .setAction("Reload") { viewModel.getWeatherFromLocalSourceRus() }
                     .show()
             }
         }

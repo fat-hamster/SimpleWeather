@@ -6,6 +6,9 @@ import android.view.Menu
 import android.view.MenuItem
 import com.dmgpersonal.simpleweather.R
 import com.dmgpersonal.simpleweather.databinding.MainActivityBinding
+import com.dmgpersonal.simpleweather.model.City
+import com.dmgpersonal.simpleweather.view.main.MainFragment
+import com.dmgpersonal.simpleweather.view.settings.SettingsFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -16,8 +19,8 @@ class MainActivity : AppCompatActivity() {
 
         binding = MainActivityBinding.inflate(layoutInflater)
         val view = binding.root
-        //setContentView(R.layout.main_activity)
         setContentView(view)
+        // Здесь должен быть город определенный через геолокацию, пока хардкод
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
