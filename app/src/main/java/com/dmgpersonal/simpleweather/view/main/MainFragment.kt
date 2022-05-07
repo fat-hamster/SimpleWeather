@@ -23,6 +23,7 @@ class MainFragment : Fragment() {
     // эта часть кода мне, вероятно, не нужна.
     companion object {
         const val BUNDLE_EXTRA = "weather"
+        var city: City = City("Москва", 55.755826, 37.617299900000035)
 
 //        fun newInstance(bundle: Bundle): MainFragment {
 //            val fragment = MainFragment()
@@ -48,7 +49,7 @@ class MainFragment : Fragment() {
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
         viewModel.getLiveData().observe(viewLifecycleOwner) { renderData(it) }
-        viewModel.getWeatherFromLocalSourceCity(City("Москва", 55.755826, 37.617299900000035))
+        viewModel.getWeatherFromLocalSourceCity(city)
             //viewModel.getWeatherFromLocalSourceRus()
 
         binding.cityName.setOnClickListener { listCities() }
@@ -60,6 +61,11 @@ class MainFragment : Fragment() {
             .replace(R.id.container, citiesList)
             .addToBackStack("")
             .commit()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.getWeatherFromLocalSourceCity(city)
     }
 
     private fun renderData(appState: AppState) {

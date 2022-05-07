@@ -1,5 +1,6 @@
 package com.dmgpersonal.simpleweather.view.cities_list
 
+import android.appwidget.AppWidgetProvider
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -23,12 +24,12 @@ class CitiesListFragment() : Fragment() {
     private lateinit var viewModel: MainViewModel
     private val adapter = CitiesFragmentListAdapter(object : OnItemViewClickListener {
         override fun onItemViewClick(weather: Weather) {
-            viewModel.getLiveData().value = AppState.SuccessData(weather)
+            //viewModel.getLiveData().value = AppState.SuccessData(weather)
+            viewModel.getLiveData().postValue(AppState.SuccessData(weather))
+            MainFragment.city = weather.city
             parentFragmentManager.popBackStack()
         }
     })
-    
-    private var isDataSetRus: Boolean = true
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -87,6 +88,7 @@ class CitiesListFragment() : Fragment() {
     }
 
     companion object {
+        var isDataSetRus: Boolean = true
         fun newInstance() =
             CitiesListFragment()
     }
